@@ -149,7 +149,7 @@ sub table_footer
   $footer .= "<td class='table-foot-cell' style='width: $width%;'>Soll-Stunden</td>";
   foreach my $person ( @people )
   {
-    my $soll_stunden = $person->{ "wochenstunden" } * 52 / 12;
+    my $soll_stunden = sprintf( "%.2f", $person->{ "wochenstunden" } * 52 / 12 );
     $footer .= "<td class='table-foot-cell' style='width: $width%;'>$soll_stunden</td>";
   }
   $footer .= "</tr></tfoot>";
