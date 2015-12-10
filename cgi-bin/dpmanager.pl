@@ -10,32 +10,8 @@ use DMLib;
 use JSON;
 use utf8;
 use File::Basename;
+use Encode;
 
-my @people = (
-  "Gabi",
-  "Verena",
-  "Sabrina",
-  "Ingrid",
-  "Angelika",
-  "Toni",
-  "Daniel",
-  "Kathrin",
-  "Claudia",
-  "Jaqui",
-  "Nadine",
-  "Anita H.",
-  "Anita N.",
-  "Julia",
-  "Lisa",
-  "Ana",
-  "Jasmin",
-  "Silke"
-);
-
-  my $width = 100 / ( $#people + 2 );
-  $width *= 10;
-  $width = floor( $width );
-  $width /= 10;
 
 my $q = CGI->new;
 
@@ -47,6 +23,15 @@ mkLog( "D", 0, "===========================================" );
 my $conf = read_config( );
 
 my $dbh = DBConnect( "DBI:mysql:database=$conf->{ 'db' }->{ 'db' };host=$conf->{ 'db' }->{ 'host' }", $conf->{ 'db' }->{ 'user' }, $conf->{ 'db' }->{ 'pw' } );
+$dbh->{ 'mysql_enable_utf8' } = 1;
+
+my @people;
+load_people( );
+
+my $width = 100 / ( $#people + 2 );
+$width *= 10;
+$width = floor( $width );
+$width /= 10;
 
 my $func = $q->param( "func" ) || "";
 mkLog( "D", 0, "func: $func" );
@@ -102,9 +87,9 @@ sub table_head
 {
   my $head = "<thead><tr class='table-head heading'>";
   $head .= "<th class='table-head-cell' style='width: $width%;'></th>";
-  foreach my $people ( @people )
+  foreach my $person ( @people )
   {
-    $head .= "<th class='table-head-cell' style='width: $width%;'>$people</th>";
+    $head .= "<th class='table-head-cell' style='width: $width%;'>$person->{ 'first_name' }</th>";
   }
   $head .= "</tr></thead>";
   return $head;
@@ -133,19 +118,17 @@ sub table_rows
 
     $rows .= sprintf( "<td class='table-row-cell heading $weekend'>$dtxt %02d</td>\n", $day, $month, $year );
 
-    my $people_index = 0;
-    foreach my $people ( @people )
+    foreach my $person ( @people )
     {
-      $people_index ++;
       my $sth;
-      unless( $sth = MySqlExec( $dbh, "select dienst from dienst where person = ? and day = ? and month = ? and year = ?", $people_index, $day, $month, $year ) )
+      unless( $sth = MySqlExec( $dbh, "select dienst from dienst where person = ? and day = ? and month = ? and year = ?", $person->{ "id" }, $day, $month, $year ) )
       {
         mkLog( "F", 0, "DB-Error!" );
         exit( 1 );
       }
       my ( $dienst ) = $sth->fetchrow_array( );
       $sth->finish( );
-      $rows .= "<td><input class='day' type='text' value='$dienst' style='width: 100%;' data-day='${day}' data-person='${people_index}' id='${day}_${people_index}'></input></td>";
+      $rows .= "<td><input class='day' type='text' value='$dienst' style='width: 100%;' data-day='${day}' data-person='$person->{ 'id' }' id='${day}_$person->{ 'id' }'></input></td>";
     }
 
     $rows .= "</tr>";
@@ -205,4 +188,20 @@ sub read_config
   close FIN;
 
   return decode_json( $config_content );
+}
+
+sub load_people
+{
+  my $r;
+  my $sth;
+  unless( $sth = MySqlExec( $dbh, "select * from person order by position" ) )
+  {
+    mkLog( "F", 0, "Error while selecting people!" );
+    exit( 1 );
+  }
+  while ( $r = $sth->fetchrow_hashref( ) )
+  {
+    push( @people, $r );
+  }
+  $sth->finish( );
 }
