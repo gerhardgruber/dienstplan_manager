@@ -1,0 +1,42 @@
+.table {
+  border: 1px solid black;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.table-head {
+}
+
+.heading {
+  background-color: lightgray;
+}
+
+.table-row {
+  border-bottom: 1px solid black;
+}
+
+.table-head-cell {
+  padding: 2px;
+  text-align: center;
+}
+
+.table-row-cell {
+  padding: 2px;
+  text-align: center;
+}
+
+.weekend {
+  background-color: #8888ee;
+}
+
+input.day {
+  padding: 0px;
+  margin: 0px;
+  border: 1px solid lightgray;
+}
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  font-size: 10px;
+}

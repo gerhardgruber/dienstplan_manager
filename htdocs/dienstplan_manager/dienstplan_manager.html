@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Verrückter Hutmacher</title>
+    <link rel="stylesheet" type="text/css" href="/dienstplan_manager/dienstplan_manager.css">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+  </head>
+  <body>
+    Verrückter Hutmacher
+
+    <br><br>
+   <table class="table" cellpadding="0" cellspacing="0">
+      $dp_table
+    </table>
+
+    <table>
+      <tr>
+        <td>tan</td><td>	12:00-20:30</td><td>	Tagdienst Nachmittag</td>
+      </tr>
+      <tr>
+        <td>f</td><td>	6-8:30</td><td>	Frühdienst Werktag</td>
+      </tr>
+      <tr>
+        <td>nd	</td><td>21:00-6</td><td>	Nachtdienst</td>
+      </tr>
+      <tr>
+        <td>taf	</td><td>07:45-20:30	</td><td>Tagdienst Wochenende/Feiertag</td>
+      </tr>
+      <tr>
+        <td>ff	</td><td>6-8	</td><td>Frühdienst Wochenende/Feiertag</td>
+      </tr>
+      <tr>
+        <td>x</td><td></td><td>		Wunschfrei</td>
+      </tr>
+      <tr>
+        <td>k</td><td></td><td>		Krankenstand</td>
+      </tr>
+      <tr>
+        <td>u</td><td></td><td>		Urlaub</td>
+      </tr>
+      <tr>
+        <td>t</td><td></td><td>		Team</td>
+      </tr>
+    </table>
+
+
+    <script type="text/javascript">
+     $( document ).ready( function( ) {
+       $( "input.day" ).keyup( function( ) {
+         var day = $( this );
+         console.log( "day changed" );
+         $.ajax( {
+           "url": "/cgi-bin/dpmanager.pl",
+           "data": {
+             "person": day.data( "person" ),
+             "day": day.data( "day" ),
+             "val": day.val( ),
+             "func": "saveval"
+           }
+         } ).done( function( ) {
+           console.log( "done" );
+         } );
+       } );
+     } );
+   </script>
+  </body>
+</html>
