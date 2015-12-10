@@ -11,7 +11,8 @@ use JSON;
 use utf8;
 use File::Basename;
 use Encode;
-
+use Date::Holidays::AT qw( holidays );
+use Data::Dumper;
 
 my $q = CGI->new;
 
@@ -45,7 +46,7 @@ else
   print $q->header( "text/html" );
 
   my $data;
-  $data->{ "dp_table" } = table_head( ) . table_rows( 1, 2016 );
+  $data->{ "dp_table" } = table_head( ) . table_rows( 1, 2016 ) . table_footer( 1, 2016 );
 
   warn "render!";
   render( "dienstplan_manager.html", $data );
@@ -102,6 +103,8 @@ sub table_rows
 
   my $days = Days_in_Month( $year, $month );
 
+  my @holidays = @{ holidays( FORMAT => "%d.%m.%Y", WHERE => [ "common", "NOE" ], YEAR => $year ) };
+
   my $rows = "<tbody>";
   for ( my $day = 1; $day <= $days; $day ++ )
   {
@@ -109,7 +112,7 @@ sub table_rows
     $dtxt = substr( $dtxt, 0, 2 );
 
     my $weekend = "";
-    if ( $dtxt eq "Sa" || $dtxt eq "So" || $day == 1 || $day == 6 )
+    if ( $dtxt eq "Sa" || $dtxt eq "So" || grep { $_ eq sprintf( "%02d.%02d.%04d", $day, $month, $year ); } @holidays )
     {
       $weekend = "weekend";
     }
@@ -135,6 +138,23 @@ sub table_rows
   }
   $rows .= "</tbody>";
   return $rows;
+}
+
+sub table_footer
+{
+  my $month = shift;
+  my $year = shift;
+
+  my $footer = "<tfoot><tr class='table-foot heading'>";
+  $footer .= "<td class='table-foot-cell' style='width: $width%;'>Soll-Stunden</td>";
+  foreach my $person ( @people )
+  {
+    my $soll_stunden = $person->{ "wochenstunden" } * 52 / 12;
+    $footer .= "<td class='table-foot-cell' style='width: $width%;'>$soll_stunden</td>";
+  }
+  $footer .= "</tr></tfoot>";
+
+  return $footer;
 }
 
 sub saveval

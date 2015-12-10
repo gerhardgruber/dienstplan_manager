@@ -22,6 +22,12 @@
 .table-row-cell {
   padding: 2px;
   text-align: center;
+  height: 16px;
+}
+
+.table-foot-cell {
+  padding: 2px;
+  text-align: center;
 }
 
 .weekend {

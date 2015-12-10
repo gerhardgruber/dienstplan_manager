@@ -4,9 +4,10 @@ CREATE TABLE `person` (
   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
   `first_name` varchar(255) DEFAULT NULL,
   `last_name` varchar(255) DEFAULT NULL,
-  `position` int DEFAULT NULL,
+  `position` int(11) DEFAULT NULL,
+  `wochenstunden` float DEFAULT '38.5',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `dienst` (
